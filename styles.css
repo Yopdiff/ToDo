@@ -67,6 +67,7 @@ body {
 .container {
     perspective: 1000px;
     margin-bottom: 30px;
+    min-height: 500px;
 }
 
 .day{
@@ -83,9 +84,14 @@ body {
     justify-content: center;
 }
 
+.days-row {
+    display: flex;
+    justify-content: center;
+}
+
 .days {
     background-color: #444451;
-    height: 70px;
+    height: 40px;
     width: 70px;
     margin: 3px;
     font-size: 20px;
@@ -93,4 +99,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.day.offset {
+    visibility: hidden;
 }

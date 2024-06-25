@@ -24,6 +24,7 @@ function changeMonth(offset) {
     currentDate.setDate(Math.min(originalDay, daysInMonth));
 
     updateMonthDisplay();
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 }
 
 // Update the month when the dropdown selection changes
@@ -43,7 +44,7 @@ document.getElementById('nextMonth').addEventListener('click', function() {
     changeMonth(1);
 });
 
-updateMonthDisplay();
+changeMonth(0);
 
 function generateCalendar(year, month) {
     const firstDay = new Date(year, month, 1).getDay();
@@ -52,39 +53,40 @@ function generateCalendar(year, month) {
     const calendarContainer = document.querySelector('.container');
     calendarContainer.innerHTML = ''; // Clear the previous calendar
 
-    let dayCount = 1;
     let row = document.createElement('div');
     row.className = 'row';
 
-    // Create empty day elements for days before the first day of the month
-    for (let i = 0; i < firstDay; i++) {
-        const emptyDay = document.createElement('div');
-        emptyDay.className = 'day';
-        row.appendChild(emptyDay);
-    }
-
     // Fill in the days of the month
     for (let day = 1; day <= numberOfDays; day++) {
-        if ((day + firstDay - 1) % 7 === 0) { // Start a new row after every 7 days
-            calendarContainer.appendChild(row);
+        if ((day + firstDay - 1) % 7 === 0 || day === 1) { // Start a new row after every 7 days or if it's the first day
+            if (day > 1) { // Don't append an empty row before the first day
+                calendarContainer.appendChild(row);
+            }
             row = document.createElement('div');
             row.className = 'row';
+            if (day === 1) {
+                // Add offset for the first day of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const offsetDiv = document.createElement('div');
+                    offsetDiv.className = 'day offset'; // Use 'offset' class to style or hide these cells
+                    row.appendChild(offsetDiv);
+                }
+            }
         }
         const dayElement = document.createElement('div');
         dayElement.className = 'day';
         dayElement.textContent = day;
         row.appendChild(dayElement);
     }
-
-    // If the last row is not full, fill it with empty days
-    while (row.children.length < 7) {
-        const emptyDay = document.createElement('div');
-        emptyDay.className = 'day';
-        row.appendChild(emptyDay);
+    const totalCells = firstDay + numberOfDays; // Total cells used by days of the month and starting offsets
+    const postOffset = 7 - (totalCells % 7); // Calculate how many cells are needed to complete the last row
+    if (postOffset < 7) { // If the last row is already complete, no need to add offsets
+        for (let i = 0; i < postOffset; i++) {
+            const offsetDiv = document.createElement('div');
+            offsetDiv.className = 'day offset'; // Use the same 'offset' class
+            row.appendChild(offsetDiv);
+        }
     }
 
     calendarContainer.appendChild(row);
 }
-
-// Example: Generate the calendar for March 2023
-generateCalendar(2023, 2); // Note: January is 0, February is 1, March is 2, etc.
